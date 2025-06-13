@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ᴄᴀʟᴇɴᴅáʀᴇíᴏ 2025</title>
+  <style>
+    body {
+      font-family: 'Times New Roman', serif;
+      background-color: #f0fff0;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+
+    h1 {
+      font-family: 'Times New Roman', serif;
+      color: #880808;
+    }
+
+    .calendario {
+      background-color: #ffffff;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 400px;
+    }
+
+    .mes {
+      margin-bottom: 30px;
+    }
+
+    .mes h2 {
+      font-family: 'Times New Roman', serif;
+      color: #880808;
+      margin-bottom: 10px;
+    }
+
+    .dias {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+    }
+
+    .dia {
+      padding: 10px;
+      background-color: #e0f7e0;
+      text-align: center;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .dia:hover {
+      background-color: #c0f0c0;
+    }
+
+    #popup {
+      display: none;
+      position: fixed;
+      top: 20%;
+      left: 50%;
+      transform: translate(-50%, -20%);
+      background: white;
+      border: 1px solid #ccc;
+      padding: 20px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      z-index: 1000;
+    }
+
+    #tarefasPorData {
+      background-color: #f0fff0;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.2);
+      max-width: 400px;
+      flex: 1;
+    }
+
+    .tarefa-dia h4 {
+      margin: 10px 0 5px;
+      color: #880808;
+    }
+
+    .tarefa-dia ul {
+      padding-left: 20px;
+    }
+
+    .tarefa-dia li {
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="calendario">
+    <h1>ᴄᴀʟᴇɴᴅáʀᴇíᴏ 2025</h1>
+    <div id="calendarioContainer"></div>
+  </div>
+
+  <div id="tarefasPorData">
+    <h3 style="color:#880808">Minhas Tarefas</h3>
+    <div id="listaTarefas"></div>
+  </div>
+
+  <div id="popup">
+    <h3 id="dataSelecionada"></h3>
+    <textarea id="tarefaTexto" rows="4" cols="30" placeholder="Digite sua tarefa..."></textarea><br><br>
+    <button onclick="salvarTarefa()">Salvar</button>
+    <button onclick="fecharPopup()">Fechar</button>
+  </div>
+
+  <script>
+    const tarefas = {};
+    const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+
+    function criarCalendario() {
+      const container = document.getElementById("calendarioContainer");
+      for (let mes = 0; mes < 12; mes++) {
+        const data = new Date(2025, mes, 1);
+        const mesDiv = document.createElement("div");
+        mesDiv.classList.add("mes");
+
+        const titulo = document.createElement("h2");
+        titulo.textContent = meses[mes];
+        mesDiv.appendChild(titulo);
+
+        const diasDiv = document.createElement("div");
+        diasDiv.classList.add("dias");
+
+        const primeiroDiaSemana = data.getDay();
+        const diasNoMes = new Date(2025, mes + 1, 0).getDate();
+
+        for (let i = 0; i < primeiroDiaSemana; i++) {
+          const vazio = document.createElement("div");
+          diasDiv.appendChild(vazio);
+        }
+
+        for (let dia = 1; dia <= diasNoMes; dia++) {
+          const diaDiv = document.createElement("div");
+          diaDiv.classList.add("dia");
+          diaDiv.textContent = dia;
+          diaDiv.onclick = () => abrirPopup(mes, dia);
+          diasDiv.appendChild(diaDiv);
+        }
+
+        mesDiv.appendChild(diasDiv);
+        container.appendChild(mesDiv);
+      }
+    }
+
+    function abrirPopup(mes, dia) {
+      const popup = document.getElementById("popup");
+      const data = `${dia.toString().padStart(2, '0')}/${(mes+1).toString().padStart(2, '0')}/2025`;
+      document.getElementById("dataSelecionada").textContent = data;
+      document.getElementById("tarefaTexto").value = "";
+      popup.style.display = "block";
+    }
+
+    function fecharPopup() {
+      document.getElementById("popup").style.display = "none";
+    }
+
+    function salvarTarefa() {
+      const data = document.getElementById("dataSelecionada").textContent;
+      const texto = document.getElementById("tarefaTexto").value.trim();
+      if (!texto) return;
+
+      if (!tarefas[data]) tarefas[data] = [];
+      tarefas[data].push(texto);
+      fecharPopup();
+      atualizarListaTarefas();
+    }
+
+    function atualizarListaTarefas() {
+      const container = document.getElementById("listaTarefas");
+      container.innerHTML = "";
+      for (const data in tarefas) {
+        const bloco = document.createElement("div");
+        bloco.classList.add("tarefa-dia");
+        bloco.innerHTML = `<h4>${data}</h4><ul>` + tarefas[data].map(t => `<li contenteditable="true">${t}</li>`).join("") + "</ul>";
+        container.appendChild(bloco);
+      }
+    }
+
+    window.onload = criarCalendario;
+  </script>
+</body>
+</html>
