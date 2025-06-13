@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ᴄᴀʟᴇɴᴅáʀᴇíᴏ 2025</title>
+  <title>Agendinha Online</title>
   <style>
     body {
       font-family: 'Times New Roman', serif;
@@ -94,7 +94,7 @@
 </head>
 <body>
   <div class="calendario">
-    <h1>ᴄᴀʟᴇɴᴅáʀᴇíᴏ 2025</h1>
+    <h1>Agendinha Online</h1>
     <div id="calendarioContainer"></div>
   </div>
 
@@ -111,7 +111,10 @@
   </div>
 
   <script>
-    const tarefas = {};
+    // Tarefas salvas localmente para cada usuário
+    const userKey = 'agenda_usuario_' + Date.now();
+    let tarefas = JSON.parse(localStorage.getItem(userKey)) || {};
+
     const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 
     function criarCalendario() {
@@ -168,6 +171,8 @@
 
       if (!tarefas[data]) tarefas[data] = [];
       tarefas[data].push(texto);
+
+      localStorage.setItem(userKey, JSON.stringify(tarefas));
       fecharPopup();
       atualizarListaTarefas();
     }
@@ -183,7 +188,8 @@
       }
     }
 
-    window.onload = criarCalendario;
+    criarCalendario();
+    atualizarListaTarefas();
   </script>
 </body>
 </html>
